@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Canvas Fun</title>
+    <script src = "sortingvisualizer.js"></script> 
+</head>
+    <body>
+        <div>
+            <label>enter the values you wish to sort: </label> 
+            <input placeholder="seperate values by comma" id="input"> 
+            <label id = "slider-output">Or generate random array of length: 50</label>
+            <input type="range" min="1" max="1000" value="50" class="slider" id="range">
+        </div>
+        <div>
+            <label for="speed">Speed (Milliseconds):</label>
+            <select name="speed" id="animate-speed">
+                <option value="1">1 </option>
+                <option value="10">10</option>
+                <option value="50">50</option>
+                <option value="500">500</option>
+                <option value="1000">1000</option>
+                <option value="2000">2000</option>
+
+            </select>
+            <button id="animate">Start Visualization</button> 
+        </div>
+        <div>
+            <h4>Selection Sort: </h4>
+            <canvas id="selection-canvas" height = "100" width = "400" style="border:1px solid #000000;"></canvas>
+        </div>
+        <div>
+            <h4>Insertion Sort: </h4>
+            <canvas id="insertion-canvas" height = "100" width = "400" style="border:1px solid #000000;"></canvas>
+        </div>
+    
+    </body>
+</html>
