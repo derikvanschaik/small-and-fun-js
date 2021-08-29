@@ -38,17 +38,20 @@ const fill_array = (array) =>{
 }
 const put_word = (word, array, orientation) =>{ 
      // random integer (0-5) 
-    // diag right (top left corner to bott right corner) 
+    // diag right (top left corner to bott right corner)
+    let wordIndices = []; // track the indices 
     if (orientation == 5){
         for (let i = 0; i < word.length; i++){
-            array[i][i] = word.charAt(i).toUpperCase(); 
+            array[i][i] = word.charAt(i).toUpperCase();
+            wordIndices.push([i,i]);  
         }
 
     }
     // diag left (top right corner to bott left corner)
     if (orientation == 4){
         for( let i =0, j= word.length-1; i < word.length; i++, j--){
-            array[i][j] = word.charAt(i).toUpperCase(); 
+            array[i][j] = word.charAt(i).toUpperCase();
+            wordIndices.push([i,j]); 
         }
 
     }
@@ -56,7 +59,8 @@ const put_word = (word, array, orientation) =>{
     if (orientation == 3){
         let j = random(word.length-1); // choose random col 
         for (let i =0; i < word.length; i++){
-            array[i][j] = word.charAt(i).toUpperCase();  
+            array[i][j] = word.charAt(i).toUpperCase();
+            wordIndices.push([i,j]);
         }
 
     }
@@ -65,13 +69,15 @@ const put_word = (word, array, orientation) =>{
         let j = random(word.length-1); 
         for (let i = word.length-1; i >= 0; i--){
             array[i][j] = word.charAt(word.length - i -1).toUpperCase();
+            wordIndices.push([i,j]);
         }
     }
     //right (word goes from left to right) 
     if (orientation == 1){
         let i = random(word.length -1);
         for(let j = 0; j < word.length; j++){
-            array[i][j] = word.charAt(j).toUpperCase(); 
+            array[i][j] = word.charAt(j).toUpperCase();
+            wordIndices.push([i,j]);
         } 
         
     }
@@ -79,9 +85,11 @@ const put_word = (word, array, orientation) =>{
     if (orientation == 0){
         let i = random(word.length-1);
         for( let j = word.length-1; j >= 0; j--){
-            array[i][j] = word.charAt(word.length-j -1).toUpperCase();   
+            array[i][j] = word.charAt(word.length-j -1).toUpperCase();
+            wordIndices.push([i,j]);   
         } 
     }
+    return wordIndices; // return tracker array 
 
 }
 const create_table_from_array = (array) =>{
@@ -102,12 +110,29 @@ const create_word_search = (word, root) =>{
     let array = create_array(word);
     choose_word_orientation(word.length); 
     array = fill_array(array); 
-    put_word(word, array, choose_word_orientation() );
+    const trackerIndices = put_word(word, array, choose_word_orientation() );
     const tableElement = create_table_from_array(array);
-    root.appendChild(tableElement); 
+    root.appendChild(tableElement);
+    return trackerIndices; 
 }
+
 window.onload = () =>{
-    const testerWord = 'rich'; // for testing and creation
-    const root = document.getElementById("root"); 
-    create_word_search(testerWord, root);
+    const root = document.getElementById("root");
+    const input = document.getElementById("user-word"); 
+    const button = document.getElementById("generate-word-search");
+    // tracker variable
+    let trackerIndices;
+
+    button.onclick = () => {
+        if (!input.value){
+            input.placeholder = "Please enter a word here!";
+            return; 
+        }
+        input.placeholder = "type word here";
+        if (root.childNodes){
+            root.removeChild(root.childNodes[0]); 
+        } 
+        trackerIndices = create_word_search(input.value, root);  
+    }
+
 }
