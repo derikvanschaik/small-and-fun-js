@@ -14,9 +14,10 @@ const create_array = (word) =>{
 
 }
 // helper function for couple of functions 
+// **INCLUSIVE random function**
 const random = (max) =>{
     return Math.floor(
-        Math.random() * (max) + 0 
+        Math.random() * (max + 1) // +1 makes the random function inclusive   
         ); 
 }
 const choose_word_orientation = () =>{
@@ -147,7 +148,7 @@ window.onload = () =>{
     button.onclick = () => {
         if (!input.value){
             input.placeholder = "Please enter a word here!";
-            return; 
+            return;  
         }
         input.placeholder = "type word here";
         if (root.childNodes){
@@ -158,7 +159,7 @@ window.onload = () =>{
     }
     findWord.onclick = () =>{
         console.log(root.childNodes);  
-        highlightWordInTable(root.childNodes[0], trackerIndices);     
+        highlightWordInTable(root.childNodes[0], trackerIndices);      
     }
 
 
