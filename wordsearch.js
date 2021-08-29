@@ -43,7 +43,7 @@ const put_word = (word, array, orientation) =>{
     if (orientation == 5){
         for (let i = 0; i < word.length; i++){
             array[i][i] = word.charAt(i).toUpperCase();
-            wordIndices.push([i,i]);  
+            wordIndices.push([i,i]);   
         }
 
     }
@@ -60,7 +60,7 @@ const put_word = (word, array, orientation) =>{
         let j = random(word.length-1); // choose random col 
         for (let i =0; i < word.length; i++){
             array[i][j] = word.charAt(i).toUpperCase();
-            wordIndices.push([i,j]);
+            wordIndices.push([i,j]); 
         }
 
     }
@@ -69,7 +69,7 @@ const put_word = (word, array, orientation) =>{
         let j = random(word.length-1); 
         for (let i = word.length-1; i >= 0; i--){
             array[i][j] = word.charAt(word.length - i -1).toUpperCase();
-            wordIndices.push([i,j]);
+            wordIndices.push([i,j]); 
         }
     }
     //right (word goes from left to right) 
@@ -89,6 +89,7 @@ const put_word = (word, array, orientation) =>{
             wordIndices.push([i,j]);   
         } 
     }
+    // console.log("word indices", wordIndices); 
     return wordIndices; // return tracker array 
 
 }
@@ -104,7 +105,26 @@ const create_table_from_array = (array) =>{
         })
     });
     return table; 
-} 
+}
+const highlightWordInTable = (table, wordIndices) =>{ 
+    let tableElements = []; 
+    const tableRows = table.querySelectorAll("tr");
+    tableRows.forEach( (row) =>{
+        const cols = row.querySelectorAll("td");
+        let tableRow = []; 
+        cols.forEach( (col) =>{ 
+            tableRow.push(col); 
+        }); 
+        tableElements.push(tableRow); 
+    }); 
+
+    wordIndices.forEach( (list) =>{
+        [i, j] = list; // unpack indices 
+        // highlight the character of searched word in table 
+        tableElements[i][j].style.backgroundColor= '#ADD8E6'
+
+    } )
+}
 
 const create_word_search = (word, root) =>{
     let array = create_array(word);
@@ -120,9 +140,10 @@ window.onload = () =>{
     const root = document.getElementById("root");
     const input = document.getElementById("user-word"); 
     const button = document.getElementById("generate-word-search");
+    const findWord = document.getElementById("find-word"); 
     // tracker variable
     let trackerIndices;
-
+    // event handlers 
     button.onclick = () => {
         if (!input.value){
             input.placeholder = "Please enter a word here!";
@@ -131,8 +152,14 @@ window.onload = () =>{
         input.placeholder = "type word here";
         if (root.childNodes){
             root.removeChild(root.childNodes[0]); 
-        } 
-        trackerIndices = create_word_search(input.value, root);  
+        }
+        document.getElementById("find-word").style.visibility = 'visible'; 
+        trackerIndices = create_word_search(input.value, root); 
     }
+    findWord.onclick = () =>{
+        console.log(root.childNodes);  
+        highlightWordInTable(root.childNodes[0], trackerIndices);     
+    }
+
 
 }
