@@ -23,7 +23,7 @@ const random = (max) =>{
 const choose_word_orientation = () =>{
     // orientation mappings: 
     // 0 : left, 1: right, 2: up, 3: down, 4: diagonal left, 5: diagonal right. 
-    return random(6);  // return number which reps the orientation. 
+    return random(5);  // return number which reps the orientation. 
 
 }
 // fill array with random letters
@@ -31,7 +31,7 @@ const fill_array = (array) =>{
     const choices = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");  
     for (let i = 0; i < array.length; i++){
         for (let j = 0; j< array.length; j++){
-            array[i][j] = choices[random(choices.length)]; 
+            array[i][j] = choices[random(choices.length -1)]; 
         }
     }
     // console.log(array); 
@@ -138,7 +138,7 @@ const create_word_search = (word, root) =>{
 }
 
 window.onload = () =>{
-    const root = document.getElementById("root");
+    const root = document.getElementById("root"); 
     const input = document.getElementById("user-word"); 
     const button = document.getElementById("generate-word-search");
     const findWord = document.getElementById("find-word"); 
