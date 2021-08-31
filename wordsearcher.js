@@ -2,13 +2,48 @@
 // PROGRAM WHERE USER PUTS IN THEIR WORD AND PROGRAM FINDS IT
 
 // **INCLUSIVE random function**
+
+// returns false if could not find word
+// otherwise returns the coordinates in the array
+// which are where the word lies within the array.
+// params: arrayN - rows, arrayM - num of cols. 
+const wordSearcherAlgorithm = (word, array, arrayN, arrayM) =>{ 
+
+    let startRow = 0;  
+    let startCol = 0;
+    let coordinatePairs = []; 
+    for (let i = 0; i < arrayN; i++){
+        for (let j = 0; j < arrayM; j++){ 
+            // checking forward words 
+            let idx = 0;
+            startRow = i; 
+            startCol = j; 
+            while( word[idx].toLowerCase() == array[i][j + idx].toLowerCase() ){  
+                coordinatePairs.push( [i, j+idx++]); // increment idx  
+                if (idx == word.length){
+                    endRow = i; 
+                    endCol = j + idx -1;  	
+                    return coordinatePairs; // we found it 
+                }
+                if ( (j+idx >= arrayM ) ){ 
+
+                    break; // exit out loop 
+                }
+            }
+            coordinatePairs = []; // reset array  
+        }
+    }
+    return false; // did not find word 
+    
+}
+
 const random = (max) =>{ 
     return Math.floor(
         Math.random() * (max + 1) // +1 makes the random function inclusive   
         ); 
 }
 const createArray = (n,m) =>{
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""); 
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");  
     let array = []; 
     for (let i = 0; i < n; i++){
         let row = []; 
@@ -46,8 +81,21 @@ window.onload = () =>{
     root.appendChild(wordSearcherTable);
     const tableElements = wordSearcherTable.querySelectorAll("td");  
 
-    wordSearcherInput.oninput = () =>{
-        console.log(wordSearcherInput.value);     
+    wordSearcherButton.onclick = () =>{
+        if (!wordSearcherInput.value){ 
+            return console.log('please return a valid value'); 
+        }
+        const wordSearchValue = wordSearcherAlgorithm(wordSearcherInput.value, array, 4, 5); 
+        if (wordSearchValue){ 
+            wordSearchValue.forEach( ([i, j])=>{
+                const rowLength = array[0].length; 
+                const index = (i*rowLength) + j; 
+                console.log("index", index); 
+                tableElements[index].style.color = 'red';  
+            } ); 
+            return; 
+        }
+        console.log("could not find word: ", wordSearcherInput.value); 
     }
     tableElements.forEach( (tableCol, index) =>{
         // Reflects changes user makes in table
@@ -55,7 +103,7 @@ window.onload = () =>{
         // algorithms on 
         tableCol.oninput = ()=>{
             const col = index % array[0].length;
-            const row = Math.floor( index/ array[0].length );
+            const row = Math.floor( index/ array[0].length ); 
              array[row][col] = tableCol.innerText;  
              console.log(array[row][col]); 
              console.log(array);   
