@@ -46,7 +46,6 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM) =>{
             coordinatePairs = []; // reset array
             idx = 0; 
             // checking for straight line words - iterate through rows for each columns
-            idx = 0;
             while(word[idx].toLowerCase() == array[i + idx][j].toLowerCase() ){
                 coordinatePairs.push( [i +idx, j]);
                 idx++;  // increment idx 
@@ -97,7 +96,7 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM) =>{
             col = j; 
             while( row < arrayN && col < arrayM){
 
-                if (backwardsWord[idx] === array[row][col]){
+                if (backwardsWord[idx].toLowerCase() === array[row][col].toLowerCase()){
                     coordinatePairs.push([row++, col++]); // increment after appending 
                     idx++;
                     if (idx >= word.length){
@@ -107,10 +106,13 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM) =>{
                     break; 
                 }
             }
+            coordinatePairs = [];
             // checking for diagonals that go from right to left 
-            idx = 0; 
-            while( row < arrayN && arrayM >= 0 ){
-                if ( word[idx] === array[row][col]){
+            idx = 0;
+            row = i; 
+            col = j; 
+            while( row < arrayN && col >= 0 ){
+                if ( word[idx].toLowerCase() === array[row][col].toLowerCase()){  
                     coordinatePairs.push([row, col]); 
                     row++; 
                     col--; // we decrement the column 
@@ -124,9 +126,11 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM) =>{
             }
             coordinatePairs = []; 
             // checking for diagonals that go from right to left 
-            idx = 0; 
-            while( row < arrayN && arrayM >= 0 ){
-                if ( backwardsWord[idx] === array[row][col]){
+            idx = 0;
+            row = i; 
+            col = j; 
+            while( row < arrayN && col >= 0 ){
+                if ( backwardsWord[idx].toLowerCase() === array[row][col].toLowerCase()){ 
                     coordinatePairs.push([row, col]); 
                     row++; 
                     col--; // we decrement the column 
@@ -196,33 +200,7 @@ const createTableElementsArray = (table) =>{
     return tableArray; 
 
 }
-
-window.onload = () =>{
-    // dom elements 
-    const wordSearcherInput = document.getElementById("word-to-search");
-    const root = document.getElementById("word-search-table-container");
-    const wordSearcherButton = document.getElementById("search-for-word"); 
-    let array = createArray(4, 4);
-    const table = createTable(array); 
-    const wordSearcherTableArray = createTableElementsArray(table);  // an array of the table elements in table 
-    root.appendChild(table); 
-
-    wordSearcherButton.onclick = () =>{ 
-        if (!wordSearcherInput.value){ 
-            return wordSearcherInput.placeHolder = "Please return a value"; 
-        }
-        wordSearcherInput.placeHolder = "Enter word to search in table"; 
-
-        const wordSearchValue = wordSearcherAlgorithm(wordSearcherInput.value, array, array.length, array[0].length); 
-        if (wordSearchValue){ 
-            wordSearchValue.forEach( ([i, j])=>{
-                console.log("i and j returned from alg:", i, j); 
-                wordSearcherTableArray[i][j].style.color = "red"; 
-            } ); 
-            return; 
-        }
-        console.log("could not find word: ", wordSearcherInput.value); 
-    }
+const createUserEditableTable = (wordSearcherTableArray, array) =>{ 
     // adding event listeners to table
     // this variable fixes the cursor positioning bug 
     // for when user goes up or left in texteditable content
@@ -272,7 +250,72 @@ window.onload = () =>{
             });
         }
     }
+}
 
+window.onload = () =>{
+    // dom elements 
+    const wordSearcherInput = document.getElementById("word-to-search");
+    const root = document.getElementById("word-search-table-container");
+    const wordSearcherButton = document.getElementById("search-for-word");
+    const wordSearcherTableN  = document.getElementById("table-height");
+    const wordSearcherTableM  = document.getElementById("table-width");
+    // start with defaults for now 
+    let wordSearcherTable;
+    let wordSearcherTableArray;
+    let array;
+    // init default values -- start with 4 by 4 table for now 
+    array = createArray(4, 4);  
+    wordSearcherTable = createTable(array);
+     // an array of the table elements in table 
+    wordSearcherTableArray = createTableElementsArray(wordSearcherTable);  
+    root.appendChild(wordSearcherTable);
+    createUserEditableTable(wordSearcherTableArray, array); 
+
+    wordSearcherTableM.oninput = () =>{
+        if (wordSearcherTableN.value && wordSearcherTableM.value){
+            if (wordSearcherTable){
+                root.removeChild(wordSearcherTable); 
+            }
+            array = createArray(wordSearcherTableN.value, wordSearcherTableM.value);
+            wordSearcherTable = createTable(array);
+             // an array of the table elements in table 
+            wordSearcherTableArray = createTableElementsArray(wordSearcherTable); 
+            root.appendChild(wordSearcherTable);
+            createUserEditableTable(wordSearcherTableArray, array);    
+
+        } 
+    }
+    wordSearcherTableN.oninput = () =>{ 
+        if (wordSearcherTableN.value && wordSearcherTableM.value){
+            if (wordSearcherTable){
+                root.removeChild(wordSearcherTable); 
+            }
+            array = createArray(wordSearcherTableN.value, wordSearcherTableM.value);
+            wordSearcherTable = createTable(array);
+             // an array of the table elements in table 
+            wordSearcherTableArray = createTableElementsArray(wordSearcherTable); 
+            root.appendChild(wordSearcherTable);
+            createUserEditableTable(wordSearcherTableArray, array);
+
+        } 
+    }
+
+    wordSearcherButton.onclick = () =>{ 
+        if (!wordSearcherInput.value){ 
+            return wordSearcherInput.placeHolder = "Please return a value"; 
+        }
+        wordSearcherInput.placeHolder = "Enter word to search in table"; 
+
+        const wordSearchValue = wordSearcherAlgorithm(wordSearcherInput.value, array, array.length, array[0].length); 
+        if (wordSearchValue){ 
+            wordSearchValue.forEach( ([i, j])=>{
+                console.log("i and j returned from alg:", i, j); 
+                wordSearcherTableArray[i][j].style.color = "red"; 
+            } ); 
+            return; 
+        }
+        console.log("could not find word: ", wordSearcherInput.value); 
+    }
 
     
 }
