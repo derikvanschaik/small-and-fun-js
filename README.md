@@ -15,6 +15,7 @@ Demo:
 User Interface to generate random table to which user inserts a word either forwards, reversed, diagonally reversed, 
 and the program runs a brute-force word search algorithm on array representing table. Note that one could code this
 without an algorithm as you could just track the inputs changed by user but I thought it would be a lot more fun to 
-code the algorithm as well! But I get it, sometimes you just feel like doing the easier stuff. 
-Demo:
+code the algorithm as well! But I get it, sometimes you just feel like doing the easier stuff.
+
+
 ![Alt Text](https://github.com/derikvanschaik/small-and-fun-js/blob/main/gifs/wordsearcher.gif)
