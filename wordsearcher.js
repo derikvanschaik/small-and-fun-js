@@ -252,6 +252,16 @@ const createUserEditableTable = (wordSearcherTableArray, array) =>{
     }
 }
 
+const initWordSearcher = (tableHeight, tableWidth, wordSearcherTable,root, array) =>{
+        array = createArray(tableHeight,tableWidth);
+        wordSearcherTable = createTable(array);
+         // an array of the table elements in table 
+        wordSearcherTableArray = createTableElementsArray(wordSearcherTable); 
+        root.appendChild(wordSearcherTable);
+        createUserEditableTable(wordSearcherTableArray, array);
+        return [array, wordSearcherTable, wordSearcherTableArray]; 
+}
+
 window.onload = () =>{
     // dom elements 
     const wordSearcherInput = document.getElementById("word-to-search");
@@ -262,42 +272,31 @@ window.onload = () =>{
     // start with defaults for now 
     let wordSearcherTable;
     let wordSearcherTableArray;
-    let array;
+    let array; 
     // init default values -- start with 4 by 4 table for now 
-    array = createArray(4, 4);  
-    wordSearcherTable = createTable(array);
-     // an array of the table elements in table 
-    wordSearcherTableArray = createTableElementsArray(wordSearcherTable);  
-    root.appendChild(wordSearcherTable);
-    createUserEditableTable(wordSearcherTableArray, array); 
+    [array, wordSearcherTable, wordSearcherTableArray ] = initWordSearcher(4, 4, wordSearcherTable,root, array); 
 
     wordSearcherTableM.oninput = () =>{
-        if (wordSearcherTableN.value && wordSearcherTableM.value){
-            if (wordSearcherTable){
-                root.removeChild(wordSearcherTable); 
-            }
-            array = createArray(wordSearcherTableN.value, wordSearcherTableM.value);
-            wordSearcherTable = createTable(array);
-             // an array of the table elements in table 
-            wordSearcherTableArray = createTableElementsArray(wordSearcherTable); 
-            root.appendChild(wordSearcherTable);
-            createUserEditableTable(wordSearcherTableArray, array);    
-
-        } 
+        if (! (wordSearcherTableN.value && wordSearcherTableM.value) ){
+            return; 
+        }
+        if (wordSearcherTable){
+            root.removeChild(wordSearcherTable); 
+        }
+        [array, wordSearcherTable, wordSearcherTableArray ] = initWordSearcher(
+            wordSearcherTableN.value, wordSearcherTableM.value, wordSearcherTable,root, array
+            );
     }
-    wordSearcherTableN.oninput = () =>{ 
-        if (wordSearcherTableN.value && wordSearcherTableM.value){
-            if (wordSearcherTable){
-                root.removeChild(wordSearcherTable); 
-            }
-            array = createArray(wordSearcherTableN.value, wordSearcherTableM.value);
-            wordSearcherTable = createTable(array);
-             // an array of the table elements in table 
-            wordSearcherTableArray = createTableElementsArray(wordSearcherTable); 
-            root.appendChild(wordSearcherTable);
-            createUserEditableTable(wordSearcherTableArray, array);
-
-        } 
+    wordSearcherTableN.oninput = () =>{
+        if (! (wordSearcherTableN.value && wordSearcherTableM.value) ){
+            return; 
+        }
+        if (wordSearcherTable){
+            root.removeChild(wordSearcherTable);  
+        }
+        [array, wordSearcherTable, wordSearcherTableArray ] = initWordSearcher(
+            wordSearcherTableN.value, wordSearcherTableM.value, wordSearcherTable,root, array
+            );
     }
 
     wordSearcherButton.onclick = () =>{ 
@@ -305,7 +304,6 @@ window.onload = () =>{
             return wordSearcherInput.placeHolder = "Please return a value"; 
         }
         wordSearcherInput.placeHolder = "Enter word to search in table"; 
-
         const wordSearchValue = wordSearcherAlgorithm(wordSearcherInput.value, array, array.length, array[0].length); 
         if (wordSearchValue){ 
             wordSearchValue.forEach( ([i, j])=>{
