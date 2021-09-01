@@ -281,17 +281,22 @@ window.onload = () =>{
             return; 
         }
         if (wordSearcherTable){
+            // clear previous error output 
+            document.getElementById("error-output").textContent = '';
             root.removeChild(wordSearcherTable); 
         }
         [array, wordSearcherTable, wordSearcherTableArray ] = initWordSearcher(
             wordSearcherTableN.value, wordSearcherTableM.value, wordSearcherTable,root, array
             );
     }
-    wordSearcherTableN.oninput = () =>{
+    wordSearcherTableN.oninput = () =>{ 
+
         if (! (wordSearcherTableN.value && wordSearcherTableM.value) ){
             return; 
         }
         if (wordSearcherTable){
+            // clear previous error output 
+            document.getElementById("error-output").textContent = '';
             root.removeChild(wordSearcherTable);  
         }
         [array, wordSearcherTable, wordSearcherTableArray ] = initWordSearcher(
@@ -309,10 +314,12 @@ window.onload = () =>{
             wordSearchValue.forEach( ([i, j])=>{
                 console.log("i and j returned from alg:", i, j); 
                 wordSearcherTableArray[i][j].style.color = "red"; 
-            } ); 
+            } );
+            // clear previous error output 
+            document.getElementById("error-output").textContent = '';
             return; 
         }
-        console.log("could not find word: ", wordSearcherInput.value); 
+        document.getElementById("error-output").textContent = `Could not find word ${wordSearcherInput.value}`; 
     }
 
     
