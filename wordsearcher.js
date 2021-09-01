@@ -234,7 +234,6 @@ const createUserEditableTable = (wordSearcherTableArray, array) =>{
                     if (j - 1 >= 0){
                         wentUpOrLeft = true; 
                         wordSearcherTableArray[i][j -1].focus();
-                        
                     }
                 }
                 if(event.key === "ArrowRight"){  
@@ -304,12 +303,18 @@ window.onload = () =>{
             );
     }
 
-    wordSearcherButton.onclick = () =>{ 
+    wordSearcherButton.onclick = () =>{
         if (!wordSearcherInput.value){ 
             return wordSearcherInput.placeHolder = "Please return a value"; 
         }
+        // grab user input 
+        const searchWord = wordSearcherInput.value;   
+        // clear the input 
+        wordSearcherInput.value = "";  
+        // reset the place holder 
         wordSearcherInput.placeHolder = "Enter word to search in table"; 
-        const wordSearchValue = wordSearcherAlgorithm(wordSearcherInput.value, array, array.length, array[0].length); 
+        // run word search algorithm 
+        const wordSearchValue = wordSearcherAlgorithm(searchWord, array, array.length, array[0].length); 
         if (wordSearchValue){ 
             wordSearchValue.forEach( ([i, j])=>{
                 console.log("i and j returned from alg:", i, j); 
@@ -319,7 +324,7 @@ window.onload = () =>{
             document.getElementById("error-output").textContent = '';
             return; 
         }
-        document.getElementById("error-output").textContent = `Could not find word ${wordSearcherInput.value}`; 
+        document.getElementById("error-output").textContent = `Could not find word '${searchWord}'`; 
     }
 
     
