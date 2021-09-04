@@ -1,138 +1,62 @@
-
+// returns false if could not find word
+// otherwise returns the coordinates in the array
+// which are where the word lies within the array.
 // params: arrayN - rows, arrayM - num of cols. 
-const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray, speed) =>{   
+const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{   
 
     let i =0;
     let j = 0; 
     let loop;
     let lastCoord; // array of indices
-    let matched = []; //array of pairs of indices
-    // idx for each type of loop!
-    let horizIdx =0;
-    let vertIdx = 0;
-    let leftDiagIdx = 0; // left to right diagonal idx
-    let rightDiagIdx = 0; 
-    // need these for diagonals 
-    let leftDiagRow =0; 
-    let leftDiagCol = 0;
-    let rightDiagRow = 0; 
-    let rightDiagCol = 0; 
+    let matched = []; //array of pairs of indices 
+    let idx =0;
     let increment = true; 
 
     loop = setInterval( ()=>{
- 
+        tableArray[i][j].style.backgroundColor = 'yellow'; 
         if (lastCoord){
             [lastRow, lastCol] = lastCoord; 
-            tableArray[lastRow][lastCol].style.backgroundColor = 'white'; 
+            tableArray[lastRow][lastCol].style.backgroundColor = 'white';
         }
         // while loop 
        // this is our first while loop simulator -- checks forward words 
-        if (word[horizIdx].toLowerCase() === array[i][j+horizIdx].toLowerCase() ){   
+        if (word[idx].toLowerCase() === array[i][j+idx].toLowerCase() ){ 
             increment = false;
-            tableArray[i][j + horizIdx].style.border = '1px solid grey';
-            matched.push( [i, j+horizIdx] ); 
-            horizIdx++; 
-            if (horizIdx >= word.length){ 
+            tableArray[i][j + idx].style.border = '1px solid grey';
+            matched.push( [i, j+idx] ); 
+            idx++; 
+            if (idx >= word.length){
+                console.log("idx >= word.length");
+                console.log("found word!");
                 clearInterval(loop);
                 return; 
             }
-            if (j+horizIdx >= arrayM){
-                console.log("break condition");
-                // not sure if needed
-                horizIdx = 0;  
-                increment = true; 
+            if (j+idx >= arrayM){
+                console.log("break condition");  
+                increment = true;
+                idx = 0; 
             }
-        
-        }else if (word[vertIdx].toLowerCase() === array[vertIdx+i][j].toLowerCase() ){ 
-            increment = false;
-            tableArray[i + vertIdx][j].style.border = '1px solid grey'; 
-            matched.push( [i + vertIdx, j] ); 
-            vertIdx++; 
-            if (vertIdx >= word.length){  
-                clearInterval(loop);
-                return; 
-            }
-            if (i+vertIdx >= arrayN){
-                console.log("break condition");
-                //not sure if this helps a bug
-                vertIdx = 0; 
-                increment = true;  
-            }
-
-        }else if (word[leftDiagIdx].toLowerCase() === array[leftDiagRow][leftDiagCol].toLowerCase() ){
-
-            increment = false;
-            tableArray[leftDiagRow][leftDiagCol].style.border = '1px solid grey'; 
-            matched.push( [leftDiagRow, leftDiagCol] );
-            // increment rows and cols
-            leftDiagRow++; 
-            leftDiagCol++; 
-            leftDiagIdx++;
-            // found word 
-            if (leftDiagIdx >= word.length){  
-                clearInterval(loop);
-                return; 
-            }
-            // break condition 
-            if (leftDiagRow >= arrayN || leftDiagCol >= arrayM){
-                leftDiagIdx = 0; 
-                leftDiagRow = i; 
-                leftDiagCol = j; 
-                increment = true; 
-            }
-        }else if (word[rightDiagIdx].toLowerCase() === array[rightDiagRow][rightDiagCol].toLowerCase() ){
-            
-            increment = false;
-            tableArray[rightDiagRow][rightDiagCol].style.border = '1px solid grey';   
-            matched.push( [rightDiagRow, rightDiagCol] );
-            // increment rows and cols
-            rightDiagRow++;  
-            rightDiagCol--; 
-            rightDiagIdx++;
-            // found word 
-            if (rightDiagIdx >= word.length){  
-                clearInterval(loop);
-                return; 
-            }
-            // break condition 
-            if (rightDiagRow >= arrayN || rightDiagCol < 0 ){
-                rightDiagIdx = 0;  
-                rightDiagRow = i; 
-                rightDiagCol = j; 
-                increment = true; 
-            }
-        }
-        else{
-            vertIdx = 0; 
-            horizIdx = 0;
-            leftDiagIdx = 0;
-            rightDiagIdx = 0; 
-            // reset diagonal vars 
-            leftDiagRow = i; 
-            leftDiagCol = j; 
-            rightDiagRow = i; 
-            rightDiagCol = j; 
+        }else{ 
+            idx = 0;
             increment = true; 
         }
         // inner loop simulator -- all while loops have been completed time for next j iteration
         if (increment){
             // unstyle all previously matched cells
-            tableArray[i][j].style.backgroundColor = 'yellow';
-
             matched.forEach( ([i, j] ) => tableArray[i][j].style.border = null ); 
             lastCoord = [i, j];  
             j++; 
             i += Math.floor(j /arrayM); 
             j = j % arrayM;
         }
-        
+
         if (i>= arrayN){
             console.log("loop finished at", i, j); 
             clearInterval(loop);
             return; 
         } 
 
-    }, speed);  
+    }, 100); 
 }
 
 const random = (max) =>{ 
@@ -228,7 +152,7 @@ const createUserEditableTable = (wordSearcherTableArray, array) =>{
                             return;
                         }
                         wordSearcherTableArray[i][j + 1].focus();
-                        
+
                     } 
                 }
             });
@@ -264,7 +188,9 @@ window.onload = () =>{
         const searchWord = wordSearcherInput.value; 
         // run word search algorithm 
         const wordSearchValue = wordSearcherAlgorithm(
-            searchWord, array, array.length, array[0].length, wordSearcherTableArray, 100
+            searchWord, array, array.length, array[0].length, wordSearcherTableArray
                             ); 
     }
+
+
 }
