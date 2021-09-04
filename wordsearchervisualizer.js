@@ -1,6 +1,6 @@
 
 // params: arrayN - rows, arrayM - num of cols. 
-const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{   
+const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray, speed) =>{   
 
     let i =0;
     let j = 0; 
@@ -9,18 +9,25 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{
     let matched = []; //array of pairs of indices
     // idx for each type of loop!
     let horizIdx =0;
-    let vertIdx = 0; 
+    let vertIdx = 0;
+    let leftDiagIdx = 0; // left to right diagonal idx
+    let rightDiagIdx = 0; 
+    // need these for diagonals 
+    let leftDiagRow =0; 
+    let leftDiagCol = 0;
+    let rightDiagRow = 0; 
+    let rightDiagCol = 0; 
     let increment = true; 
 
     loop = setInterval( ()=>{
-        tableArray[i][j].style.backgroundColor = 'yellow'; 
+ 
         if (lastCoord){
             [lastRow, lastCol] = lastCoord; 
-            tableArray[lastRow][lastCol].style.backgroundColor = 'white';
+            tableArray[lastRow][lastCol].style.backgroundColor = 'white'; 
         }
         // while loop 
        // this is our first while loop simulator -- checks forward words 
-        if (word[horizIdx].toLowerCase() === array[i][j+horizIdx].toLowerCase() ){  
+        if (word[horizIdx].toLowerCase() === array[i][j+horizIdx].toLowerCase() ){   
             increment = false;
             tableArray[i][j + horizIdx].style.border = '1px solid grey';
             matched.push( [i, j+horizIdx] ); 
@@ -52,15 +59,66 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{
                 increment = true;  
             }
 
+        }else if (word[leftDiagIdx].toLowerCase() === array[leftDiagRow][leftDiagCol].toLowerCase() ){
+
+            increment = false;
+            tableArray[leftDiagRow][leftDiagCol].style.border = '1px solid grey'; 
+            matched.push( [leftDiagRow, leftDiagCol] );
+            // increment rows and cols
+            leftDiagRow++; 
+            leftDiagCol++; 
+            leftDiagIdx++;
+            // found word 
+            if (leftDiagIdx >= word.length){  
+                clearInterval(loop);
+                return; 
+            }
+            // break condition 
+            if (leftDiagRow >= arrayN || leftDiagCol >= arrayM){
+                leftDiagIdx = 0; 
+                leftDiagRow = i; 
+                leftDiagCol = j; 
+                increment = true; 
+            }
+        }else if (word[rightDiagIdx].toLowerCase() === array[rightDiagRow][rightDiagCol].toLowerCase() ){
+            
+            increment = false;
+            tableArray[rightDiagRow][rightDiagCol].style.border = '1px solid grey';   
+            matched.push( [rightDiagRow, rightDiagCol] );
+            // increment rows and cols
+            rightDiagRow++;  
+            rightDiagCol--; 
+            rightDiagIdx++;
+            // found word 
+            if (rightDiagIdx >= word.length){  
+                clearInterval(loop);
+                return; 
+            }
+            // break condition 
+            if (rightDiagRow >= arrayN || rightDiagCol < 0 ){
+                rightDiagIdx = 0;  
+                rightDiagRow = i; 
+                rightDiagCol = j; 
+                increment = true; 
+            }
         }
         else{
             vertIdx = 0; 
             horizIdx = 0;
+            leftDiagIdx = 0;
+            rightDiagIdx = 0; 
+            // reset diagonal vars 
+            leftDiagRow = i; 
+            leftDiagCol = j; 
+            rightDiagRow = i; 
+            rightDiagCol = j; 
             increment = true; 
         }
         // inner loop simulator -- all while loops have been completed time for next j iteration
         if (increment){
             // unstyle all previously matched cells
+            tableArray[i][j].style.backgroundColor = 'yellow';
+
             matched.forEach( ([i, j] ) => tableArray[i][j].style.border = null ); 
             lastCoord = [i, j];  
             j++; 
@@ -74,7 +132,7 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{
             return; 
         } 
 
-    }, 100); 
+    }, speed);  
 }
 
 const random = (max) =>{ 
@@ -206,7 +264,7 @@ window.onload = () =>{
         const searchWord = wordSearcherInput.value; 
         // run word search algorithm 
         const wordSearchValue = wordSearcherAlgorithm(
-            searchWord, array, array.length, array[0].length, wordSearcherTableArray
+            searchWord, array, array.length, array[0].length, wordSearcherTableArray, 100
                             ); 
     }
 }
