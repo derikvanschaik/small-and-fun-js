@@ -13,7 +13,7 @@ const appendMatchedTable = (type,content, matchTable) =>{
 // otherwise returns the coordinates in the array
 // which are where the word lies within the array.
 // params: arrayN - rows, arrayM - num of cols. 
-const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray, statusOutput, matchTable) =>{   
+const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray, statusOutput, matchTable, button, speed) =>{   
 
     let i =0;
     let j = 0; 
@@ -24,6 +24,14 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray, statusOu
     let idx =0;
     let increment = true; 
     statusOutput.textContent = `Searching for '${word}'`;
+
+    // remove children from match list 
+    matchTable.replaceChildren();
+    // remove cursor coloring at end of table
+    tableArray[arrayN -1][arrayM-1].style.backgroundColor = 'white'; 
+    // disable search word button so that user cannot retrigger event
+    // and cause issues with the set interval 
+    button.disabled = true;
 
     loop = setInterval( ()=>{
         tableArray[i][j].style.backgroundColor = 'yellow'; 
@@ -69,11 +77,12 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray, statusOu
             j = j % arrayM;
         }
 
-        if (i>= arrayN){ 
+        if (i>= arrayN){
+
             statusOutput.textContent = `Could not find '${word}'`; 
             clearInterval(loop); 
             // create matched table and event listeners
-            appendMatchedTable("text", "Closest Matches: ", matchTable)
+            appendMatchedTable("text", "Closest Matches: ", matchTable) 
             closestMatches.forEach( (matchedArray) =>{
                 const matchedWord = matchedArray.map( ([i, j]) => array[i][j]).join("") 
                 const matchedItem = appendMatchedTable("match", matchedWord, matchTable);
@@ -91,11 +100,13 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray, statusOu
                 }); 
 
 
-            }); 
+            });
+            // allow user to search for another word once function is finished executing 
+            button.disabled = false; 
             return; 
         } 
 
-    }, 100); 
+    }, speed);   
 }
 
 const random = (max) =>{ 
@@ -217,23 +228,65 @@ window.onload = () =>{
     const wordSearcherTableN  = document.getElementById("table-height");
     const wordSearcherTableM  = document.getElementById("table-width");
     const output = document.getElementById('output');
-    const matchTable = document.getElementById('match-table');  
+    const matchTable = document.getElementById('match-table');
+    const animateSpeedSelector = document.getElementById("animate-speed"); 
     // start with defaults for now 
     let wordSearcherTable;
     let wordSearcherTableArray;
-    let array; 
+    let array;
+    let animateSpeed = animateSpeedSelector.value;
     // init default values -- start with 4 by 4 table for now 
     [array, wordSearcherTable, wordSearcherTableArray ] = initWordSearcher(10, 10, wordSearcherTable,root, array); 
 
+    wordSearcherTableM.oninput = () =>{
+        if (! (wordSearcherTableN.value && wordSearcherTableM.value) ){ 
+            return; 
+        }
+        if (wordSearcherTable){
+            // clear previous error output 
+            document.getElementById("output").textContent = '';
+            root.removeChild(wordSearcherTable); 
+        }
+        if(matchTable){
+            matchTable.replaceChildren(); 
+        }
+        [array, wordSearcherTable, wordSearcherTableArray ] = initWordSearcher(
+            wordSearcherTableN.value, wordSearcherTableM.value, wordSearcherTable,root, array
+            );
+    }
+    wordSearcherTableN.oninput = () =>{ 
+
+        if (! (wordSearcherTableN.value && wordSearcherTableM.value) ){
+            return; 
+        }
+        if (wordSearcherTable){
+            // clear previous error output 
+            document.getElementById("output").textContent = ''; 
+            root.removeChild(wordSearcherTable);  
+        }
+        if(matchTable){
+            matchTable.replaceChildren(); 
+        }
+        [array, wordSearcherTable, wordSearcherTableArray ] = initWordSearcher(
+            wordSearcherTableN.value, wordSearcherTableM.value, wordSearcherTable,root, array
+            );
+    }
+    // generate word search 
     wordSearcherButton.onclick = () =>{
         const searchWord = wordSearcherInput.value; 
-        // run word search algorithm 
-        const wordSearchValue = wordSearcherAlgorithm(
-                    searchWord, array, array.length,
-                    array[0].length, wordSearcherTableArray,
-                    output,matchTable, 
-                            ); 
+        // run word search algorithm
+        if (searchWord){ 
+            const wordSearchValue = wordSearcherAlgorithm(
+                searchWord, array, array.length,
+                array[0].length, wordSearcherTableArray,
+                output,matchTable, wordSearcherButton, animateSpeed, 
+                        ); 
+        }
     }
+    // updates speed to selected value 
+    animateSpeedSelector.addEventListener("change", () =>{ 
+        animateSpeed = animateSpeedSelector.value; 
+    }); 
 
 
 }

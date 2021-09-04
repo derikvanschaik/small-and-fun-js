@@ -13,11 +13,21 @@
         <p>Create <input placeholder="N" id="table-height" type="number" value="4"> 
             by <input placeholder="M" id="table-width" type="number" value="4">Table</p> 
        <input id="word-to-search" placeholder = "Enter word to search in table">
+       <label>Speed (ms) </label>
+       <select name="speed" id="animate-speed" value=""> 
+            <option value="1">1 </option>
+            <option value="10">10</option> 
+            <option value="50">50</option>
+            <option selected value="100">100</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+            <option value="2000">2000</option>
+        </select>
        <p id="output"></p>   
        <div id = "word-search-table-container">
        </div>
-       <button id="search-for-word">Search Word</button>
-       
+       <button id="search-for-word">Search Word</button> 
+
        <table id = "match-table"> 
        </table>
     </div>
