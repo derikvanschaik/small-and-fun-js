@@ -1,7 +1,8 @@
-// returns false if could not find word
-// otherwise returns the coordinates in the array
-// which are where the word lies within the array.
-// params: arrayN - rows, arrayM - num of cols. 
+
+// visualizer of the wordsearcher algorithm we implemented in 
+// wordsearcher.js. A lot more complex and a lot more moving parts
+// as we cannot use loops or recursion since we want to visualize 
+// the algorithm -- need to use setInterval function 
 const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{   
 
     let i =0;
@@ -12,6 +13,13 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{
     let idx =0;
     let increment = true; 
 
+    // variables to keep track of which 'loop' we are currently on.
+    let onHorizLoop = false;
+    let onVertLoop = false;
+    let onLeftDiagLoop = false;
+    let onRightDiagLoop = false; 
+
+    // our simulated nested loop 
     loop = setInterval( ()=>{
         tableArray[i][j].style.backgroundColor = 'yellow'; 
         if (lastCoord){
@@ -21,20 +29,23 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{
         // while loop 
        // this is our first while loop simulator -- checks forward words 
         if (word[idx].toLowerCase() === array[i][j+idx].toLowerCase() ){ 
-            increment = false;
-            tableArray[i][j + idx].style.border = '1px solid grey';
-            matched.push( [i, j+idx] ); 
-            idx++; 
-            if (idx >= word.length){
-                console.log("idx >= word.length");
-                console.log("found word!");
-                clearInterval(loop);
-                return; 
-            }
-            if (j+idx >= arrayM){
-                console.log("break condition");  
-                increment = true; 
-            }
+                // make sure we were either on no loop or on this loop in prior iterations 
+                if (onHorizLoop || [onHorizLoop, onVertLoop, onLeftDiagLoop, onRightDiagLoop].every((value) => value ===false) )
+                    onHorizLoop = true; 
+                    increment = false;
+                    tableArray[i][j + idx].style.border = '1px solid grey';
+                    matched.push( [i, j+idx] ); 
+                    idx++; 
+                    if (idx >= word.length){
+                        console.log("idx >= word.length"); 
+                        console.log("found word!");
+                        clearInterval(loop);
+                        return; 
+                    }
+                    if (j+idx >= arrayM){
+                        console.log("break condition");  
+                        increment = true; 
+                    }
         }else{ 
             idx = 0;
             increment = true; 
@@ -159,7 +170,7 @@ const createUserEditableTable = (wordSearcherTableArray, array) =>{
     }
 }
 
-const initWordSearcher = (tableHeight, tableWidth, wordSearcherTable,root, array) =>{
+const initWordSearcher = (tableHeight, tableWidth, wordSearcherTable,root, array) =>{ 
         array = createArray(tableHeight,tableWidth);
         wordSearcherTable = createTable(array);
          // an array of the table elements in table 
