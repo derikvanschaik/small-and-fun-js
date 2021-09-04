@@ -236,7 +236,8 @@ window.onload = () =>{
     let array;
     let animateSpeed = animateSpeedSelector.value;
     // init default values -- start with 4 by 4 table for now 
-    [array, wordSearcherTable, wordSearcherTableArray ] = initWordSearcher(10, 10, wordSearcherTable,root, array); 
+    [array, wordSearcherTable, wordSearcherTableArray ] = initWordSearcher(
+        wordSearcherTableN.value, wordSearcherTableM.value, wordSearcherTable,root, array); 
 
     wordSearcherTableM.oninput = () =>{
         if (! (wordSearcherTableN.value && wordSearcherTableM.value) ){ 
