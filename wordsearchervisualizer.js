@@ -1,4 +1,3 @@
-
 // returns false if could not find word
 // otherwise returns the coordinates in the array
 // which are where the word lies within the array.
