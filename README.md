@@ -16,7 +16,7 @@ Demo:
 ### wordsearcher.js 
 To run: requires both wordsearcher.js, and wordsearcher.html saved to the same directory. 
 
-User Interface to generate random table to which user inserts a word either forwards, reversed, diagonally reversed, 
+User Interface to generate random table to which user inserts a word (reversed or non reversed) either horizontally, vertically, diagonally 
 and the program runs a brute-force word search algorithm on array representing table. Note that one could code this
 without an algorithm as you could just track the inputs changed by user but I thought it would be a lot more fun to 
 code the algorithm as well! But I get it, sometimes you just feel like doing the easier stuff.
