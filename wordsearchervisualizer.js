@@ -1,25 +1,17 @@
 
-// visualizer of the wordsearcher algorithm we implemented in 
-// wordsearcher.js. A lot more complex and a lot more moving parts
-// as we cannot use loops or recursion since we want to visualize 
-// the algorithm -- need to use setInterval function 
+// params: arrayN - rows, arrayM - num of cols. 
 const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{   
 
     let i =0;
     let j = 0; 
     let loop;
     let lastCoord; // array of indices
-    let matched = []; //array of pairs of indices 
-    let idx =0;
+    let matched = []; //array of pairs of indices
+    // idx for each type of loop!
+    let horizIdx =0;
+    let vertIdx = 0; 
     let increment = true; 
 
-    // variables to keep track of which 'loop' we are currently on.
-    let onHorizLoop = false;
-    let onVertLoop = false;
-    let onLeftDiagLoop = false;
-    let onRightDiagLoop = false; 
-
-    // our simulated nested loop 
     loop = setInterval( ()=>{
         tableArray[i][j].style.backgroundColor = 'yellow'; 
         if (lastCoord){
@@ -28,26 +20,42 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{
         }
         // while loop 
        // this is our first while loop simulator -- checks forward words 
-        if (word[idx].toLowerCase() === array[i][j+idx].toLowerCase() ){ 
-                // make sure we were either on no loop or on this loop in prior iterations 
-                if (onHorizLoop || [onHorizLoop, onVertLoop, onLeftDiagLoop, onRightDiagLoop].every((value) => value ===false) )
-                    onHorizLoop = true; 
-                    increment = false;
-                    tableArray[i][j + idx].style.border = '1px solid grey';
-                    matched.push( [i, j+idx] ); 
-                    idx++; 
-                    if (idx >= word.length){
-                        console.log("idx >= word.length"); 
-                        console.log("found word!");
-                        clearInterval(loop);
-                        return; 
-                    }
-                    if (j+idx >= arrayM){
-                        console.log("break condition");  
-                        increment = true; 
-                    }
-        }else{ 
-            idx = 0;
+        if (word[horizIdx].toLowerCase() === array[i][j+horizIdx].toLowerCase() ){  
+            increment = false;
+            tableArray[i][j + horizIdx].style.border = '1px solid grey';
+            matched.push( [i, j+horizIdx] ); 
+            horizIdx++; 
+            if (horizIdx >= word.length){ 
+                clearInterval(loop);
+                return; 
+            }
+            if (j+horizIdx >= arrayM){
+                console.log("break condition");
+                // not sure if needed
+                horizIdx = 0;  
+                increment = true; 
+            }
+        
+        }else if (word[vertIdx].toLowerCase() === array[vertIdx+i][j].toLowerCase() ){ 
+            increment = false;
+            tableArray[i + vertIdx][j].style.border = '1px solid grey'; 
+            matched.push( [i + vertIdx, j] ); 
+            vertIdx++; 
+            if (vertIdx >= word.length){  
+                clearInterval(loop);
+                return; 
+            }
+            if (i+vertIdx >= arrayN){
+                console.log("break condition");
+                //not sure if this helps a bug
+                vertIdx = 0; 
+                increment = true;  
+            }
+
+        }
+        else{
+            vertIdx = 0; 
+            horizIdx = 0;
             increment = true; 
         }
         // inner loop simulator -- all while loops have been completed time for next j iteration
@@ -170,7 +178,7 @@ const createUserEditableTable = (wordSearcherTableArray, array) =>{
     }
 }
 
-const initWordSearcher = (tableHeight, tableWidth, wordSearcherTable,root, array) =>{ 
+const initWordSearcher = (tableHeight, tableWidth, wordSearcherTable,root, array) =>{
         array = createArray(tableHeight,tableWidth);
         wordSearcherTable = createTable(array);
          // an array of the table elements in table 
@@ -201,6 +209,4 @@ window.onload = () =>{
             searchWord, array, array.length, array[0].length, wordSearcherTableArray
                             ); 
     }
-
-    
 }
