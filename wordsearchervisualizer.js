@@ -1,16 +1,29 @@
+const appendMatchedTable = (type,content, matchTable) =>{
+    const item = document.createElement("tr");
+    if (type === "text"){
+        item.textContent = content;
+        matchTable.appendChild(item);
+        return item;   
+    }
+    item.innerHTML = `<a href="#">${content}</a?`;
+    matchTable.appendChild(item);
+    return item; // we return item so that we can attach event listeners if we want to 
+}
 // returns false if could not find word
 // otherwise returns the coordinates in the array
 // which are where the word lies within the array.
 // params: arrayN - rows, arrayM - num of cols. 
-const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{   
+const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray, statusOutput, matchTable) =>{   
 
     let i =0;
     let j = 0; 
     let loop;
-    let lastCoord; // array of indices
-    let matched = []; //array of pairs of indices 
+    let lastCoord; // array of indices 
+    let matched = []; //array of pairs of indices
+    let closestMatches = []; // array of matched arrays   
     let idx =0;
     let increment = true; 
+    statusOutput.textContent = `Searching for '${word}'`;
 
     loop = setInterval( ()=>{
         tableArray[i][j].style.backgroundColor = 'yellow'; 
@@ -26,8 +39,7 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{
             matched.push( [i, j+idx] ); 
             idx++; 
             if (idx >= word.length){
-                console.log("idx >= word.length");
-                console.log("found word!");
+                statusOutput.textContent = `found '${word}'`;  
                 clearInterval(loop);
                 return; 
             }
@@ -36,23 +48,50 @@ const wordSearcherAlgorithm = (word, array, arrayN, arrayM, tableArray) =>{
                 increment = true;
                 idx = 0; 
             }
-        }else{ 
+        }else{
+            // append to closest matched list 
+            if (matched.length > 0 ){ 
+                closestMatches.push( matched);      
+            }
+            // unstyle all previously matched cells
+            matched.forEach( ([i, j] ) => tableArray[i][j].style.border = null );
+
+            matched = []; 
             idx = 0;
             increment = true; 
         }
         // inner loop simulator -- all while loops have been completed time for next j iteration
         if (increment){
-            // unstyle all previously matched cells
-            matched.forEach( ([i, j] ) => tableArray[i][j].style.border = null ); 
+
             lastCoord = [i, j];  
             j++; 
             i += Math.floor(j /arrayM); 
             j = j % arrayM;
         }
 
-        if (i>= arrayN){
-            console.log("loop finished at", i, j); 
-            clearInterval(loop);
+        if (i>= arrayN){ 
+            statusOutput.textContent = `Could not find '${word}'`; 
+            clearInterval(loop); 
+            // create matched table and event listeners
+            appendMatchedTable("text", "Closest Matches: ", matchTable)
+            closestMatches.forEach( (matchedArray) =>{
+                const matchedWord = matchedArray.map( ([i, j]) => array[i][j]).join("") 
+                const matchedItem = appendMatchedTable("match", matchedWord, matchTable);
+                // color in table to show user where this word is in the table when hovering over item 
+                matchedItem.addEventListener("mouseover", () =>{
+                    matchedArray.forEach( ([i, j]) =>{
+                        tableArray[i][j].style.backgroundColor = "#ADD8E6"; 
+                    }); 
+                });
+                // undo coloring 
+                matchedItem.addEventListener("mouseleave", () =>{
+                    matchedArray.forEach( ([i, j]) =>{
+                        tableArray[i][j].style.backgroundColor = null;  
+                    }); 
+                }); 
+
+
+            }); 
             return; 
         } 
 
@@ -177,6 +216,8 @@ window.onload = () =>{
     const wordSearcherButton = document.getElementById("search-for-word");
     const wordSearcherTableN  = document.getElementById("table-height");
     const wordSearcherTableM  = document.getElementById("table-width");
+    const output = document.getElementById('output');
+    const matchTable = document.getElementById('match-table');  
     // start with defaults for now 
     let wordSearcherTable;
     let wordSearcherTableArray;
@@ -188,7 +229,9 @@ window.onload = () =>{
         const searchWord = wordSearcherInput.value; 
         // run word search algorithm 
         const wordSearchValue = wordSearcherAlgorithm(
-            searchWord, array, array.length, array[0].length, wordSearcherTableArray
+                    searchWord, array, array.length,
+                    array[0].length, wordSearcherTableArray,
+                    output,matchTable, 
                             ); 
     }
 
