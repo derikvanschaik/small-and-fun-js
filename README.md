@@ -1,4 +1,12 @@
 # small-and-fun-js
+### wordsearchervisualizer.js :
+To run: requires both wordsearchervisualizer.js, and wordsearchervisualizer.html saved to the same directory. 
+This is a fun script that essentially 'visualizes' a part of the brute force algorithm we use in wordsearcher.js
+(see below for that project). 
+Demo:
+![Alt Text](https://github.com/derikvanschaik/small-and-fun-js/blob/main/gifs/wordsearchervisualizer.gif)
+
+# small-and-fun-js
 ### sortingvisualization.js :
 To run: requires both sortingvisualization.js, and sortingvisualization.html saved to the same directory. 
 Demo:
