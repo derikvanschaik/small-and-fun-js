@@ -1,5 +1,5 @@
 
-const animateFlashingCursor = (cursor) =>{  
+const animateFlashingCursor = (cursor) =>{   
     return setInterval( ()=>{
         const curChar = document.getElementById(`${cursor}`); 
         if (curChar.style.backgroundColor){ 
@@ -19,9 +19,19 @@ const calculateWpm = (startMilliseconds, numWords) =>{
     const minutes =secondsElapsed / 60; 
     return Math.floor( numWords / minutes ); // returns wpm 
 }
+// wraps each character into a span with an id that is the character index. 
+// this allows us to seperately color each individual character when user
+// is typing. 
+const createTextOutput = (textOut, sentence) =>{
+    // Security concern? Will read more at: 
+    // https://stackoverflow.com/questions/1358810/how-do-i-change-the-text-of-a-span-element-using-javascript
+    textOut.innerHTML = sentence.split("") 
+                            .map((char, i) =>`<span id="${i}" >${char}</span>` ) 
+                            .join(""); 
+}
 
 window.addEventListener("load", () =>{
-    const textOut = document.getElementById("text"); 
+    const textOut = document.getElementById("text");  
     // global variables to game 
     let cursor = 0; 
     let cursorAnimate; // points to a setInterval function for animating the cursor flash
@@ -32,10 +42,7 @@ window.addEventListener("load", () =>{
     let startMilliseconds; // tracking for wpm 
 
     // wrap each character in word into span elements 
-    // Apparently this is unsafe to do according to https://stackoverflow.com/questions/1358810/how-do-i-change-the-text-of-a-span-element-using-javascript
-    textOut.innerHTML = word.split("")
-                            .map((char, i) =>`<span id="${i}" >${char}</span>` ) 
-                            .join("");
+    createTextOutput(textOut, word); 
     // init textoutput to be colored differently on the init cursor 
     document.getElementById("0").style.backgroundColor = 'black';
     document.getElementById("0").style.color = 'white'; 
@@ -56,9 +63,8 @@ window.addEventListener("load", () =>{
         document.getElementById("error-count").textContent = `Errors: (${mistakeCount})`;
         // user has started typing words 
         if (!startedTyping){
-            // calculate current date time for wpm
+
             startMilliseconds = Date.now(); 
-            console.log("starting seconds!", startMilliseconds); 
             startedTyping = true; 
         }
         // user has finished typing words
@@ -87,7 +93,8 @@ window.addEventListener("load", () =>{
                 const span = document.getElementById(`${index}`); 
                 span.style.backgroundColor = null; 
                 span.style.color = null; 
-            }); 
+            });
+            // change new sentence and update it 
             return;  
         }
         // stops flashing cursor animation  
@@ -120,16 +127,19 @@ window.addEventListener("load", () =>{
                 lastCharCorrect = true; 
             } 
         }else if (event.key === "Backspace"){ 
-             const lastChar = document.getElementById(`${cursor--}`); 
+            const lastChar = document.getElementById(`${cursor}`); 
             // reset the last char cursor  
             lastChar.style.backgroundColor = null;
             lastChar.style.color = null;
             // color new cursor 
-            const curChar = document.getElementById(`${cursor}`);  
-            curChar.style.backgroundColor = 'black';
-            curChar.style.color = 'white';
+            if (cursor > 0){ 
+                cursor--; // decrement cursor 
+                const curChar = document.getElementById(`${cursor}`);  
+                curChar.style.backgroundColor = 'black';
+                curChar.style.color = 'white'; 
+            }
         }else{
-            lastCharCorrect = false;  
+            lastCharCorrect = false;   
             mistakeCount++;  
             document.getElementById("error-count").textContent = `Errors: (${mistakeCount})`;    
         }         
