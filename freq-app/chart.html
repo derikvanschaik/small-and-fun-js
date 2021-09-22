@@ -2,17 +2,40 @@
 <html lang="en"> 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <!-- bootstrap styling import by cdn --> 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <!-- for chart js import by cdn  --> 
     <script src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
-    <script src = "frequency.js"></script> 
+    <script src = "frequency.js"></script>  
 </head>
 <body>
-    <div class="container"> 
+    <div class="container">
+        <div class = "row" >
+            <a href="#" id="settings-toggle">Settings</a> 
+        </div>
+
+        <div id="settings-container" class="row" style="display:none">
+            <form>
+                <div class="form-group col-md-2" >
+                    <label for="frequency" id="frequency-label">Frequency: 7</label>
+                    <input type="range" class="form-control" id="frequency">
+                    <hr>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="words" name="radio" value="words"> 
+                    <label class="form-check-label" for="words">Words</label> 
+                  </div>
+
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="chars" name="radio" value="chars">   
+                    <label class="form-check-label" for="chars">Characters</label> 
+                  </div>
+            </form>
+        </div>
+
         <div class="row">
             <div class="col-md-7">  
                 <h1>Enter Your text to analyze: </h1> 

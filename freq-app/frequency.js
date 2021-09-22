@@ -1,8 +1,7 @@
 
 const getData = (wordListKeys, wordFreqValues) =>{
-
-    const data = {
-        labels: wordListKeys ,
+    const data = { 
+        labels: wordListKeys, 
         datasets: [{
           label: 'Word Frequency Analysis', 
           backgroundColor: 'rgb(255, 99, 132)', 
@@ -87,15 +86,37 @@ const sortEntries = (freqEntryArray, sortCallBack, sortType, freqNum) =>{
 
 window.onload = () =>{  
     
-    // globals 
-    const canvasContainer = document.getElementById("canvas-container"); 
+    // elements 
+    const canvasContainer = document.getElementById("canvas-container");
+    const settings = document.getElementById("settings-toggle");
+    const freqSlider = document.getElementById("frequency"); 
+    // global variables user can change 
     let freqNumber = 7; // default 
-    let sortType = "descending"; // default 
+    let sortType = "descending"; // default
+
+
+    settings.addEventListener("click", ()=>{
+        const settingsDiv = document.getElementById("settings-container");
+        const onSettingsTab = settingsDiv.style.display === "block"; 
+        if (onSettingsTab){
+            settingsDiv.style.display = 'none'; 
+            return; 
+        }
+        settingsDiv.style.display = 'block';  
+
+    }); 
+
+    freqSlider.addEventListener("input", ()=>{
+        const freqOutput = document.getElementById("frequency-label"); 
+        freqNumber = parseInt(freqSlider.value);
+        freqOutput.textContent = `Frequency: ${freqNumber}`;  
+          
+    })
 
     // event for generating frequency analysis 
-    document.getElementById("button").addEventListener("click", () =>{
+    document.getElementById("button").addEventListener("click", () =>{ 
         // removes any previously created canvases 
-        canvasContainer.replaceChildren();
+        canvasContainer.replaceChildren(); 
         // creates new canvas 
         canvas = document.createElement("canvas");  
         canvas.id = "myChart";
@@ -107,10 +128,7 @@ window.onload = () =>{
         // run word frequency on user input 
         const wordList =  processText( text, " ", filterPunctuation );    
         const wordFreqDict = createWordCountDict( wordList);
-        // get maximum for whatever lol 
-        
         const wordFreqEntries = sortEntries(Object.entries(wordFreqDict), getSortFunction, sortType, freqNumber)
-        console.log("word freq after filter", wordFreqEntries); 
         // 
         const data = getData( wordFreqEntries.map( (entry) => entry[0]), wordFreqEntries.map( (entry) => entry[1]) );  
         // creates canvas with data 
