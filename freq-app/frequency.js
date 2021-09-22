@@ -1,5 +1,6 @@
 
 const getData = (wordListKeys, wordFreqValues) =>{
+
     const data = { 
         labels: wordListKeys, 
         datasets: [{
@@ -138,8 +139,14 @@ window.onload = () =>{
         let textProcessorCallback = filterPunctuation;
         // change the callbacks and seperator char 
         if (analysisOn === "chars"){
-            splitChar = ""; 
-            textProcessorCallback = (char) => char; // simply returns char 
+            splitChar = "";
+            // define anonymous callback function for characters 
+            textProcessorCallback = (char) => { 
+                if (char === " "){
+                    return "<WHITE-SPACE>";   
+                }
+                return char.toLowerCase(); 
+                }; 
         }
         const wordList =  processText( text, splitChar , textProcessorCallback );     
         const wordFreqDict = createWordCountDict( wordList);
