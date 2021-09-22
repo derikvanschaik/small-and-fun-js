@@ -89,10 +89,12 @@ window.onload = () =>{
     // elements 
     const canvasContainer = document.getElementById("canvas-container");
     const settings = document.getElementById("settings-toggle");
-    const freqSlider = document.getElementById("frequency"); 
+    const freqSlider = document.getElementById("frequency");
+    const radios = document.getElementsByName("frequency-type");  
     // global variables user can change 
-    let freqNumber = 7; // default 
-    let sortType = "descending"; // default
+    let freqNumber = 7; // default -- from 0 to 100 
+    let sortType = "descending"; // default -- can be descending or ascending 
+    let analysisOn = "words"; // default -- can be words or characters 
 
 
     settings.addEventListener("click", ()=>{
@@ -111,7 +113,13 @@ window.onload = () =>{
         freqNumber = parseInt(freqSlider.value);
         freqOutput.textContent = `Frequency: ${freqNumber}`;  
           
-    })
+    });
+
+    radios.forEach( (radio) => radio.addEventListener("change", () =>{
+        if (radio.checked){
+            analysisOn = radio.value; 
+        }
+    })); 
 
     // event for generating frequency analysis 
     document.getElementById("button").addEventListener("click", () =>{ 
@@ -124,9 +132,16 @@ window.onload = () =>{
         canvas.height = "250"; 
         canvasContainer.appendChild(canvas);
         // remove line breaks from input in case they copied and pasted from something on web -- count as space 
-        const text = document.getElementById("text").value.replace( /[\r\n]+/gm, " " );
-        // run word frequency on user input 
-        const wordList =  processText( text, " ", filterPunctuation );    
+        const text = document.getElementById("text").value.replace( /[\r\n]+/gm, " " ); 
+        // run word frequency on user input
+        let splitChar = " ";
+        let textProcessorCallback = filterPunctuation;
+        // change the callbacks and seperator char 
+        if (analysisOn === "chars"){
+            splitChar = ""; 
+            textProcessorCallback = (char) => char; // simply returns char 
+        }
+        const wordList =  processText( text, splitChar , textProcessorCallback );     
         const wordFreqDict = createWordCountDict( wordList);
         const wordFreqEntries = sortEntries(Object.entries(wordFreqDict), getSortFunction, sortType, freqNumber)
         // 
