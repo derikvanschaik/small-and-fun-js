@@ -27,35 +27,52 @@ const createWordCountDict = (wordList) =>{
     wordList.forEach( (word) =>{
         if (word in wordCountObj){
             wordCountObj[`${word}`] += 1; 
-        }else{
+        }else if (word){ 
             wordCountObj[`${word}`] = 1; 
-        }
+        } 
     });
     console.log(wordCountObj);  
     return wordCountObj;  
-} 
-// takes a string and returns an array of words. 
-const stripWordsFromText = (text, callbackOnWord) =>{ 
-    // alphabet plus space char 
-    const alphaSpace = "abcdefghijklmnopqrstuvwxyz".split(""); 
-    // filters all punctuation out of whatever is given 
-    const wordList = text.split(" ")
-                         .map( 
-        (word) => word.split("").filter( (char) => alphaSpace.includes( char.toLowerCase() )  ).join("")  
-                            );
-    
-    if (callbackOnWord){
-        return wordList.map( (word) => callbackOnWord(word)); 
-    } 
-    return wordList;
-    
+}
 
+const filterPunctuation = (word) =>{ 
+    // alphabet 
+    const alpha = "abcdefghijklmnopqrstuvwxyz".split("");
+    // array of chars 
+    const chars = word.split("");
+
+    if (chars.length === 0 ){ 
+        return; 
+    } 
+    // splice indices 
+    let start = 0;
+    let end = chars.length -1; 
+    // if there is any non alpha chars in beginning of word
+    while( !alpha.includes( chars[start].toLowerCase()) ){
+        start++; 
+    }
+    // eliminate all non alpha chars at end of word 
+    while( !alpha.includes( chars[end].toLowerCase()) ){ 
+        end--; 
+    }
+    // end + 1 as slice extracts up to but not including end 
+    return chars.slice(start, end + 1).join("").toLowerCase(); // to lower case to compare equivalent words 
+
+}
+
+// need to rename this 
+// takes a string and returns an array of words. 
+const stripWordsFromText = (text, splitChar, callback ) =>{   
+    const wordList = text.split(splitChar).map( word=> callback(word) );                         
+    return wordList; 
 }
 
 window.onload = () =>{ 
     
     // globals 
     const canvasContainer = document.getElementById("canvas-container");
+    let freqNumber = 5; // default 
+
     // event for generating frequency analysis 
     document.getElementById("button").addEventListener("click", () =>{
         // removes any previously created canvases 
@@ -67,9 +84,10 @@ window.onload = () =>{
         canvas.height = "250"; 
         canvasContainer.appendChild(canvas);
         // remove line breaks from input in case they copied and pasted from something on web -- count as space 
-        const text = document.getElementById("text").value.replace( /[\r\n]+/gm, " " ); 
+        const text = document.getElementById("text").value.replace( /[\r\n]+/gm, " " );
+
         // run word frequency on user input 
-        const wordList =  stripWordsFromText( text );   
+        const wordList =  stripWordsFromText( text, " ", filterPunctuation );   
         const wordFreqDict = createWordCountDict( wordList);
         const data = getData( Object.keys(wordFreqDict), Object.values(wordFreqDict) ); 
         // creates canvas with data 
