@@ -1,5 +1,6 @@
 
-const getData = (wordListKeys, wordFreqValues) =>{ 
+const getData = (wordListKeys, wordFreqValues) =>{
+
     const data = {
         labels: wordListKeys ,
         datasets: [{
@@ -60,23 +61,41 @@ const filterPunctuation = (word) =>{
 
 }
 
-// need to rename this 
-// takes a string and returns an array of words. 
-const stripWordsFromText = (text, splitChar, callback ) =>{   
+
+// takes a string and returns an array 
+const processText = (text, splitChar, callback ) =>{   
     const wordList = text.split(splitChar).map( word=> callback(word) );                         
-    return wordList; 
+    return wordList;  
+}
+const getSortFunction = (sortType, a, b) =>{
+    if (sortType === "ascending"){
+        return a-b; 
+    }
+    return b-a; 
+    
+}
+// freqEntryArray: array of arrays, where inner array is [string, int]
+// sortCallBack: comparison function depending on if sort is ascending or descending. 
+// sortType: string "ascending" or "descending" 
+// freqNum: int 
+const sortEntries = (freqEntryArray, sortCallBack, sortType, freqNum) =>{
+    if (freqNum <= freqEntryArray.length){ 
+        return freqEntryArray.sort( (a,b) => sortCallBack(sortType, a[1],b[1])).slice(0, freqNum);  
+    }
+    return freqEntryArray.sort( (a,b) => sortCallBack(sortType, a[1],b[1])).slice(0, freqEntryArray.length);  
 }
 
-window.onload = () =>{ 
+window.onload = () =>{  
     
     // globals 
-    const canvasContainer = document.getElementById("canvas-container");
-    let freqNumber = 5; // default 
+    const canvasContainer = document.getElementById("canvas-container"); 
+    let freqNumber = 7; // default 
+    let sortType = "descending"; // default 
 
     // event for generating frequency analysis 
     document.getElementById("button").addEventListener("click", () =>{
         // removes any previously created canvases 
-        canvasContainer.replaceChildren(); 
+        canvasContainer.replaceChildren();
         // creates new canvas 
         canvas = document.createElement("canvas");  
         canvas.id = "myChart";
@@ -85,11 +104,15 @@ window.onload = () =>{
         canvasContainer.appendChild(canvas);
         // remove line breaks from input in case they copied and pasted from something on web -- count as space 
         const text = document.getElementById("text").value.replace( /[\r\n]+/gm, " " );
-
         // run word frequency on user input 
-        const wordList =  stripWordsFromText( text, " ", filterPunctuation );   
+        const wordList =  processText( text, " ", filterPunctuation );    
         const wordFreqDict = createWordCountDict( wordList);
-        const data = getData( Object.keys(wordFreqDict), Object.values(wordFreqDict) ); 
+        // get maximum for whatever lol 
+        
+        const wordFreqEntries = sortEntries(Object.entries(wordFreqDict), getSortFunction, sortType, freqNumber)
+        console.log("word freq after filter", wordFreqEntries); 
+        // 
+        const data = getData( wordFreqEntries.map( (entry) => entry[0]), wordFreqEntries.map( (entry) => entry[1]) );  
         // creates canvas with data 
         const myChart = new Chart( 
             document.getElementById('myChart'), 
